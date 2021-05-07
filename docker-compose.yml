@@ -1,0 +1,48 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:11
+    restart: 'no'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=leaguedex
+    ports:
+      - 5432:5432
+    networks:
+      - pern-app
+  api:
+    image: leaguedex-api
+    build: ./server
+    ports:
+      - 5000:5000
+    env_file:
+      - ./server/.env
+      - ./server/prisma/.env
+    depends_on:
+      - db
+    volumes:
+      - ./server/src:/usr/src/app/src
+    networks:
+      - pern-app
+  client:
+    image: leaguedex-client
+    build: ./client/
+    stdin_open: true
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client/src:/usr/src/app/src
+    networks:
+      - pern-app
+  adminer:
+    image: adminer
+    restart: 'no'
+    ports:
+      - 5051:8080
+    networks:
+      - pern-app
+networks:
+  pern-app:
+    driver: bridge

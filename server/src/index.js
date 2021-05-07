@@ -11,7 +11,7 @@ app.initialize(
     RiotAssetsJob.start();
 
     // Run CRON job for user email verification 00:00
-    EmailVerificationsJob.start();
+    // EmailVerificationsJob.start();
 
     // Run CRON job for user password resets 00:00
     RemovePasswordResetsJob.start();
