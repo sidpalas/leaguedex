@@ -1,0 +1,57 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:11
+    restart: 'no'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=leaguedex
+    volumes:
+      - './dbdata:/var/lib/postgresql/data'
+    ports:
+      - 5432:5432
+    networks:
+      - pern-app
+  bootstrap-db:
+    image: leaguedex-api
+    env_file:
+      - ./server/.env
+      - ./server/prisma/.env
+    depends_on:
+      db:
+        condition: 'service_healthy'
+    command: '/usr/src/app/bootstrap.sh'
+    networks:
+      - pern-app
+  api:
+    image: leaguedex-api
+    ports:
+      - 5000:5000
+    # TODO: Use github secret + command line arg for passing sensitive values
+    env_file:
+      - ./server/.env
+      - ./server/prisma/.env
+    depends_on:
+      db:
+        condition: 'service_healthy'
+    networks:
+      - pern-app
+  client:
+    image: leaguedex-client:dev
+    stdin_open: true
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client/src:/usr/src/app/src
+    networks:
+      - pern-app
+networks:
+  pern-app:
+    driver: bridge
