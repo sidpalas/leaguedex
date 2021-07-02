@@ -1,0 +1,14 @@
+# TODO
+- ✅ Decouple DB bootstrapping from main API execution
+  - Add volume to share prisma generate results with API service (?)
+- ✅ Set up dev vs production docker compose (nginx vs node for serving client files)
+- Staging / production combined setup ?
+  - Separate staging and production entirely
+- Process for dumping/restoring DB
+  - Put site into maintenance mode
+  - dump a copy of db (pg_dump)
+  - copy resulting archive from old droplet to new droplet
+  - restore from archive (pg_restore) 
+- Set up on droplet
+  - Get SSL set up
+- Github action updates

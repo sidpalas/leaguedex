@@ -1,11 +1,26 @@
+TAG?=0.0.1
+API_IMAGE_NAME:=sidpalas/leaguedex-api:$(TAG)
+CLIENT_IMAGE_NAME:=sidpalas/leaguedex-client:$(TAG)
+
+.PHONY: build-api
 build-api:
-	cd server && docker build -t leaguedex-api . 
+	cd server && docker build -t $(API_IMAGE_NAME) . 
 
-build-dev: build-api
-	cd client && make build-base
+build-dev-client: build-api
+	cd client && CLIENT_IMAGE_NAME=$(CLIENT_IMAGE_NAME) make build-base
 
-build-production: build-api
-	cd client && make build-production
+build-production-client: build-api
+	cd client && CLIENT_IMAGE_NAME=$(CLIENT_IMAGE_NAME) make build-production-client
+
+push-api: build-api
+	docker push $(API_IMAGE_NAME)
+
+push-client: build-production-client
+	docker push $(CLIENT_IMAGE_NAME)
+
+push-images:
+	$(MAKE) push-api
+	$(MAKE) push-client
 
 run-dev:
 	docker-compose --file docker-compose-dev.yml up --remove-orphans
@@ -40,3 +55,5 @@ restore-db:
 		--username postgres" < ./dump.sql
 
 	docker-compose --file docker-compose-dev.yml down
+
+# Will need to drop either the staging or production database
