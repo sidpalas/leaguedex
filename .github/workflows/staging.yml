@@ -1,8 +1,8 @@
 name: STAGING
 
-on:
-  push:
-    branches: [development]
+# on:
+#   push:
+#     branches: [development]
 
 jobs:
   build_client:
