@@ -60,7 +60,7 @@ jobs:
     - name: Deploy to Droplet
       run: |
         make copy-compose-file-to-droplet
-        DOCKER_TAG=$(DOCKER_TAG) \
+        DOCKER_TAG=$DOCKER_TAG \
         API_KEY=${{ secrets.RIOT_API_KEY }} \
         ACCESS_TOKEN_SECRET=${{ secrets.AUTH_ACCESS_TOKEN_SECRET }} \
         REFRESH_TOKEN_SECRET=${{ secrets.AUTH_REFRESH_TOKEN_SECRET}} \
