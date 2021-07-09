@@ -1,6 +1,6 @@
-TAG?=0.0.1
-API_IMAGE_NAME:=sidpalas/leaguedex-api:$(TAG)
-CLIENT_IMAGE_NAME:=sidpalas/leaguedex-client:$(TAG)
+DOCKER_TAG?=0.0.1
+API_IMAGE_NAME:=sidpalas/leaguedex-api:$(DOCKER_TAG)
+CLIENT_IMAGE_NAME:=sidpalas/leaguedex-client:$(DOCKER_TAG)
 
 .PHONY: build-api
 build-api:
