@@ -20,7 +20,7 @@ build-images:
 	$(MAKE) build-production-client
 
 .PHONY: push-api
-push-api: build-api
+push-api:
 	docker push $(API_IMAGE_NAME)
 
 .PHONY: push-client

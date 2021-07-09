@@ -3,6 +3,9 @@ name: CI/CD
 on:
   push:
     branches: [feature/dockerize-app]
+  release:
+    types:
+      - created
 
 # Trigger on master for staging
 # Trigger on release for production
@@ -33,10 +36,13 @@ jobs:
           echo 1st condition match
           echo "ENV=staging" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+          echo "DOCKER_HOST=ssh://user@${{ secrets.STAGING_DROPLET_IP }}" >> $GITHUB_ENV
         else 
+          # TODO: Test after merging to master
           echo 2nd condition match
           echo "ENV=prod" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "DOCKER_HOST=ssh://user@${{ secrets.PRODUCTION_DROPLET_IP }}" >> $GITHUB_ENV
         fi
 
     - name: Build Docker Images
@@ -44,3 +50,7 @@ jobs:
 
     - name: Push Docker Images
       run: make push-images
+    
+    - name: Deploy to Droplet
+      run: |
+        echo $DOCKER_HOST
