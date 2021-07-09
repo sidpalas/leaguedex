@@ -68,6 +68,6 @@ jobs:
         SENDGRID_EMAIL=EMAIL_DISABLED \
         DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
         DATABASE_URL=postgresql://postgres:${{ secrets.DATABASE_PASSWORD }}@db:5432/leaguedex?schema=leaguedex \
-        make run_production
+        make run-production
         
         
