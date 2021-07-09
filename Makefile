@@ -63,7 +63,7 @@ run-production:
 		SENDGRID_EMAIL=EMAIL_DISABLED \
 		DATABASE_PASSWORD=$(DATABASE_PASSWORD) \
 		DATABASE_URL=postgresql://postgres:$(DATABASE_PASSWORD)@db:5432/leaguedex?schema=leaguedex \
-		docker-compose --file ./leaguedex/docker-compose.yml up --remove-orphans
+		docker-compose --file ./leaguedex/docker-compose.yml up -d --remove-orphans
 
 ###
 
