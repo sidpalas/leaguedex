@@ -42,21 +42,22 @@ bootstrap-db:
 	docker-compose --file docker-compose-dev.yml up db bootstrap-db
 	docker-compose --file docker-compose-dev.yml down
 
-.PHONY: copy-files-to-droplet
-copy-files-to-droplet:
+.PHONY: copy-compose-file-to-droplet
+copy-compose-file-to-droplet:
 	scp docker-compose.yml root@$(DROPLET_IP):docker-compose.yml
 
 .PHONY: run-production
 run-production:
-	DOCKER_TAG=$(DOCKER_TAG) \
-	API_KEY=$(RIOT_API_KEY) \
-	ACCESS_TOKEN_SECRET=$(AUTH_ACCESS_TOKEN_SECRET) \
-	REFRESH_TOKEN_SECRET=$(AUTH_REFRESH_TOKEN_SECRET) \
-	SENDGRID_API_KEY=EMAIL_DISABLED \
-	SENDGRID_EMAIL=EMAIL_DISABLED \
-	DATABASE_PASSWORD=$(DATABASE_PASSWORD) \
-	DATABASE_URL=postgresql://postgres:$(DATABASE_PASSWORD)@db:5432/leaguedex?schema=leaguedex \
-	docker-compose up --remove-orphans
+	ssh -l root -- $(DROPLET_IP) \
+		DOCKER_TAG=$(DOCKER_TAG) \
+		API_KEY=$(RIOT_API_KEY) \
+		ACCESS_TOKEN_SECRET=$(AUTH_ACCESS_TOKEN_SECRET) \
+		REFRESH_TOKEN_SECRET=$(AUTH_REFRESH_TOKEN_SECRET) \
+		SENDGRID_API_KEY=EMAIL_DISABLED \
+		SENDGRID_EMAIL=EMAIL_DISABLED \
+		DATABASE_PASSWORD=$(DATABASE_PASSWORD) \
+		DATABASE_URL=postgresql://postgres:$(DATABASE_PASSWORD)@db:5432/leaguedex?schema=leaguedex \
+		docker-compose up --remove-orphans
 
 ###
 
