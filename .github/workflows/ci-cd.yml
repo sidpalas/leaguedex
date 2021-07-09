@@ -16,7 +16,7 @@ on:
 jobs:
   ci-cd:
     runs-on: ubuntu-latest
-    steps:
+    steps:  
     - uses: actions/checkout@v2
     - name: Login to DockerHub
       uses: docker/login-action@v1 
@@ -26,6 +26,9 @@ jobs:
 
     - name: Set ENV
       run: |-
+        echo ${GITHUB_REF##*/}
+        ${GITHUB_SHA}
+        
         if [ ${GITHUB_REF##*/} = "feature/dockerize-app" ]; then
           echo "ENV=staging" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
@@ -33,6 +36,8 @@ jobs:
           echo "ENV=prod" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
         fi
+        echo $ENV
+        echo $DOCKER_TAG
 
     - name: Build Docker Images
       run: make build-images
