@@ -1,4 +1,4 @@
-name: CI/CD
+name: build-push-deploy
 
 on:
   push:
@@ -50,6 +50,13 @@ jobs:
     - name: Push Docker Images
       run: make push-images
     
+    - name: install ssh key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_KEY }}
+        # Use ssh-keyscan -t rsa <DROPLET_IP> to generate
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
     - name: Deploy to Droplet
       run: |
         make copy-compose-file-to-droplet
