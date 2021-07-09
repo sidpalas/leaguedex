@@ -40,8 +40,9 @@ services:
     depends_on:
       db:
         condition: 'service_healthy'
-    volumes:
-      - ./server/src:/usr/src/app/src
+    # Don't mount source in production container
+    # volumes:
+    #   - ./server/src:/usr/src/app/src
     networks:
       - pern-app
   client:

@@ -44,7 +44,13 @@ bootstrap-db:
 
 .PHONY: copy-compose-file-to-droplet
 copy-compose-file-to-droplet:
-	scp docker-compose.yml root@$(DROPLET_IP):docker-compose.yml
+	ssh -l root -- $(DROPLET_IP) mkdir -p ./leaguedex
+	scp docker-compose.yml root@$(DROPLET_IP):./leaguedex/docker-compose.yml
+
+# Need to boostrap DB before we can launch app
+.PHONY: bootstrap-production
+bootstrap-production:
+	@echo "TODO: Bootstrapping production DB"
 
 .PHONY: run-production
 run-production:
@@ -57,7 +63,7 @@ run-production:
 		SENDGRID_EMAIL=EMAIL_DISABLED \
 		DATABASE_PASSWORD=$(DATABASE_PASSWORD) \
 		DATABASE_URL=postgresql://postgres:$(DATABASE_PASSWORD)@db:5432/leaguedex?schema=leaguedex \
-		docker-compose up --remove-orphans
+		docker-compose --file ./leaguedex/docker-compose.yml up --remove-orphans
 
 ###
 
