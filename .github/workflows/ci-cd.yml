@@ -23,8 +23,11 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+    # - name: Determine container tag
+    #   with:
+
     - name: Build Docker Images
-      run: |
-        pwd
-        ls
-        make build-production-client
+      run: make build-images
+      
+    - name: Push Docker Images
+      run: make push-images

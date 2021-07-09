@@ -11,8 +11,13 @@ build-dev-client: build-api
 	cd client && make build-base
 
 .PHONY: build-production-client
-build-production-client: build-api
+build-production-client:
 	cd client && CLIENT_IMAGE_NAME=$(CLIENT_IMAGE_NAME) make build-production-client
+
+.PHONY: build-images
+build-images:
+	$(MAKE) build-api
+	$(MAKE) build-production-client
 
 .PHONY: push-api
 push-api: build-api
