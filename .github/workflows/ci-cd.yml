@@ -29,7 +29,7 @@ jobs:
         echo ${GITHUB_REF##*/}
         echo ${GITHUB_SHA}
 
-        if [ ${GITHUB_REF##*/} = "feature/dockerize-app" ]; then
+        if [ ${GITHUB_REF##*/} = "dockerize-app" ]; then
           echo "ENV=staging" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
         else 
