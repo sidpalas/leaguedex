@@ -2,7 +2,6 @@ name: CI/CD
 
 on:
   push:
-    branches: [feature/dockerize-app]
 
 # Trigger on master for staging
 # Trigger on release for production
@@ -44,3 +43,28 @@ jobs:
 
     - name: Push Docker Images
       run: make push-images
+      
+      # this step would create a new tag based on the latest existing in the repo
+      # and also the SemVer label of your commit message - fix:, feat: or perf: for patch/minor/major
+      # and push it to the repo
+    - if: github.event_name == 'push' && github.ref == 'refs/heads/development' # or whichever is your release branch
+      name: Bump GH tag
+      id: tag_generator
+      uses: mathieudutour/github-tag-action@v5.4
+      with: 
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        default_bump: false
+        release_branches: development # or whichever is your release branch
+      
+      # this step would automatically create a GitHub release, whenever a push commit is made to the development branch WITH a SemVer label in the commit message
+    - if: steps.tag_generator.outputs.new_version != '' && github.event_name == 'push' && github.ref == 'refs/heads/development' # or whichever is your release branch
+      name: Create release
+      shell: pwsh # yeap, sry
+      run: |
+        $releaseTag = ""
+        $releaseTitle = ""
+        $releaseAssets = ""
+        
+        gh release create $releaseTag -t $releaseTitle $releaseAssets
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
