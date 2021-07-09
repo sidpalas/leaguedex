@@ -27,8 +27,8 @@ jobs:
     - name: Set ENV
       run: |-
         echo ${GITHUB_REF##*/}
-        ${GITHUB_SHA}
-        
+        echo ${GITHUB_SHA}
+
         if [ ${GITHUB_REF##*/} = "feature/dockerize-app" ]; then
           echo "ENV=staging" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
@@ -39,8 +39,8 @@ jobs:
         echo $ENV
         echo $DOCKER_TAG
 
-    - name: Build Docker Images
-      run: make build-images
+    # - name: Build Docker Images
+    #   run: make build-images
 
-    - name: Push Docker Images
-      run: make push-images
+    # - name: Push Docker Images
+    #   run: make push-images
