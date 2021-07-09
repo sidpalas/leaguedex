@@ -38,11 +38,9 @@ jobs:
           echo "ENV=prod" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
         fi
-        echo $ENV
-        echo $DOCKER_TAG
 
-    # - name: Build Docker Images
-    #   run: make build-images
+    - name: Build Docker Images
+      run: make build-images
 
-    # - name: Push Docker Images
-    #   run: make push-images
+    - name: Push Docker Images
+      run: make push-images
