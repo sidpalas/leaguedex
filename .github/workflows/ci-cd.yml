@@ -14,6 +14,7 @@ on:
   # production -> release tag
 # build images
 # push images (dockerhub)
+# Setting actual secret values (currently uses .env)
 # deploy to correct droplet
 
 jobs:
@@ -33,25 +34,33 @@ jobs:
         echo ${GITHUB_SHA}
 
         if [ ${GITHUB_REF##*/} = "dockerize-app" ]; then
-          echo 1st condition match
           echo "ENV=staging" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
-          echo "DOCKER_DEPLOY_HOST=ssh://user@${{ secrets.STAGING_DROPLET_IP }}" >> $GITHUB_ENV
+          echo "DROPLET_IP=${{ secrets.STAGING_DROPLET_IP }}" >> $GITHUB_ENV
         else 
           # TODO: Test after merging to master
-          echo 2nd condition match
           echo "ENV=prod" >> $GITHUB_ENV
           echo "DOCKER_TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "DOCKER_DEPLOY_HOST=ssh://user@${{ secrets.PRODUCTION_DROPLET_IP }}" >> $GITHUB_ENV
+          echo "DROPLET_IP=${{ secrets.PRODUCTION_DROPLET_IP }}" >> $GITHUB_ENV
         fi
 
-    # - name: Build Docker Images
-    #   run: make build-images
+    - name: Build Docker Images
+      run: make build-images
 
-    # - name: Push Docker Images
-    #   run: make push-images
+    - name: Push Docker Images
+      run: make push-images
     
     - name: Deploy to Droplet
       run: |
-        echo $DOCKER_DEPLOY_HOST
-        # DOCKER_HOST=$DOCKER_DEPLOY_HOST make deploy
+        make copy-compose-file
+        DOCKER_TAG=$(DOCKER_TAG) \
+        API_KEY=${{ secrets.RIOT_API_KEY }} \
+        ACCESS_TOKEN_SECRET=${{ secrets.AUTH_ACCESS_TOKEN_SECRET }} \
+        REFRESH_TOKEN_SECRET=${{ secrets.AUTH_REFRESH_TOKEN_SECRET}} \
+        SENDGRID_API_KEY=EMAIL_DISABLED \
+        SENDGRID_EMAIL=EMAIL_DISABLED \
+        DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+        DATABASE_URL=postgresql://postgres:${{ secrets.DATABASE_PASSWORD }}@db:5432/leaguedex?schema=leaguedex \
+        make run_production
+        
+        
