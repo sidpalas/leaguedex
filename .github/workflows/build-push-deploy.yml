@@ -44,6 +44,10 @@ jobs:
           echo "DROPLET_IP=${{ secrets.PRODUCTION_DROPLET_IP }}" >> $GITHUB_ENV
         fi
 
+    - uses: satackey/action-docker-layer-caching@v0.0.11
+      # Ignore the failure of a step and avoid terminating the job.
+      continue-on-error: true
+
     - name: Build Docker Images
       run: make build-images
 
