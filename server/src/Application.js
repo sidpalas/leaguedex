@@ -19,7 +19,12 @@ class Application {
   constructor() {
     this.PORT = process.env.PORT || 5000;
     this.inProduction = process.env.NODE_ENV === 'production';
-    this.whitelist = ['https://staging.leaguedex.com', 'https://leaguedex.com'];
+    this.whitelist = [
+      'https://staging.leaguedex.com',
+      'https://leaguedex.com',
+      'http://localhost',
+      'http:test.vanilla-react.com/'
+    ];
     this.userApiOptions = {
       windowMs: 15 * 60 * 1000,
       max: 10,
