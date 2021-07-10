@@ -23,7 +23,7 @@ class Application {
       'https://staging.leaguedex.com',
       'https://leaguedex.com',
       'http://localhost',
-      'http:test.vanilla-react.com/'
+      'http://test.vanilla-react.com/'
     ];
     this.userApiOptions = {
       windowMs: 15 * 60 * 1000,
