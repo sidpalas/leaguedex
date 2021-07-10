@@ -22,6 +22,8 @@ RUN yarn build
 ### copy into nginx base
 FROM nginx:1.19 as production
 
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
 COPY --from=builder /usr/src/app/build/ /usr/share/nginx/html
 
 

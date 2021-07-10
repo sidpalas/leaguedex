@@ -7,18 +7,8 @@ on:
     types:
       - created
 
-# Trigger on master for staging
-# Trigger on release for production
-# Determine docker image tag
-  # staging -> commit sha
-  # production -> release tag
-# build images
-# push images (dockerhub)
-# Setting actual secret values (currently uses .env)
-# deploy to correct droplet
-
 jobs:
-  ci-cd:
+  build-push-deploy:
     runs-on: ubuntu-latest
     steps:  
     - uses: actions/checkout@v2
@@ -45,8 +35,6 @@ jobs:
         fi
 
     - uses: satackey/action-docker-layer-caching@v0.0.11
-      # Ignore the failure of a step and avoid terminating the job.
-      continue-on-error: true
 
     - name: Build Docker Images
       run: make build-images
@@ -58,12 +46,13 @@ jobs:
       uses: shimataro/ssh-key-action@v2
       with:
         key: ${{ secrets.SSH_KEY }}
-        # Use ssh-keyscan -t rsa <DROPLET_IP> to generate
+        # Use ssh-keyscan -t rsa <DROPLET_IP> to generate this
         known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
     - name: Deploy to Droplet
       run: |
         make copy-compose-file-to-droplet
+        
         DOCKER_TAG=$DOCKER_TAG \
         API_KEY=${{ secrets.RIOT_API_KEY }} \
         ACCESS_TOKEN_SECRET=${{ secrets.AUTH_ACCESS_TOKEN_SECRET }} \
@@ -73,5 +62,3 @@ jobs:
         DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
         DATABASE_URL=postgresql://postgres:${{ secrets.DATABASE_PASSWORD }}@db:5432/leaguedex?schema=leaguedex \
         make run-production
-        
-        

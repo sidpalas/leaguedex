@@ -44,8 +44,8 @@ run-dev:
 
 .PHONY: bootstrap-db
 bootstrap-db:
-	docker-compose --file docker-compose-dev.yml up db bootstrap-db
-	docker-compose --file docker-compose-dev.yml down
+	DOCKER_TAG=$(DOCKER_TAG) docker-compose --file docker-compose-dev.yml up -d db bootstrap-db
+	DOCKER_TAG=$(DOCKER_TAG) docker-compose --file docker-compose-dev.yml down
 
 .PHONY: copy-compose-file-to-droplet
 copy-compose-file-to-droplet:
@@ -95,7 +95,9 @@ dump-db:
 
 .PHONY: restore-db
 restore-db:
-	docker-compose --file docker-compose-dev.yml up -d db
+	DOCKER_TAG=$(DOCKER_TAG) \
+		DATABASE_PASSWORD=$(DATABASE_PASSWORD) \
+		docker-compose --file docker-compose.yml up -d db
 	
 	sleep 15
 
@@ -103,6 +105,6 @@ restore-db:
 		-c "PGPASSWORD=postgres psql \
 		--username postgres" < ./dump.sql
 
-	docker-compose --file docker-compose-dev.yml down
+	docker-compose --file docker-compose.yml down
 
 # Will need to drop either the staging or production database
