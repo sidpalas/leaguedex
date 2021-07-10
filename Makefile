@@ -8,8 +8,13 @@ build-api:
 	cd server && docker build -t $(API_IMAGE_NAME) . 
 
 .PHONY: build-dev-client
-build-dev-client: build-api
-	cd client && make build-base
+build-dev-client:
+	cd client && CLIENT_IMAGE_NAME=$(CLIENT_IMAGE_NAME) make build-base
+
+.PHONY: build-dev
+build-dev:
+	$(MAKE) build-api
+	$(MAKE) build-dev-client
 
 .PHONY: build-production-client
 build-production-client:
@@ -35,7 +40,7 @@ push-images:
 
 .PHONY: run-dev
 run-dev:
-	docker-compose --file docker-compose-dev.yml up --remove-orphans
+	DOCKER_TAG=$(DOCKER_TAG) docker-compose --file docker-compose-dev.yml up --remove-orphans
 
 .PHONY: bootstrap-db
 bootstrap-db:
@@ -51,6 +56,16 @@ copy-compose-file-to-droplet:
 .PHONY: bootstrap-production
 bootstrap-production:
 	@echo "TODO: Bootstrapping production DB"
+
+.PHONY: run-production-local
+run-production-local:
+	DOCKER_TAG=$(DOCKER_TAG) \
+	  DATABASE_PASSWORD=postgres \
+		DATABASE_URL=postgresql://postgres:postgres@db:5432/leaguedex?schema=leaguedex \
+		docker-compose \
+		--env-file $(CURDIR)/server/.env \
+		--file $(CURDIR)/docker-compose.yml \
+		up -d --remove-orphans
 
 .PHONY: run-production
 run-production:

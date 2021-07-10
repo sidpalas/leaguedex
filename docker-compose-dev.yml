@@ -21,6 +21,7 @@ services:
       - pern-app
   bootstrap-db:
     image: sidpalas/leaguedex-api:${DOCKER_TAG}
+    build: ./server
     env_file:
       - ./server/.env
       - ./server/prisma/.env
@@ -32,9 +33,9 @@ services:
       - pern-app
   api:
     image: sidpalas/leaguedex-api:${DOCKER_TAG}
+    build: ./server
     ports:
       - 5000:5000
-    # TODO: Use github secret + command line arg for passing sensitive values
     env_file:
       - ./server/.env
       - ./server/prisma/.env
@@ -45,6 +46,7 @@ services:
       - pern-app
   client:
     image: sidpalas/leaguedex-client:${DOCKER_TAG}
+    build: ./client
     stdin_open: true
     ports:
       - 3000:3000
