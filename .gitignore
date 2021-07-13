@@ -1,6 +1,9 @@
 node_modules
+dbdata
 .env
 yarn-error.log
 server/build
 .vscode
 next.md
+
+*.sql

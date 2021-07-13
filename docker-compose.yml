@@ -1,0 +1,61 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:11
+    restart: 'no'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=leaguedex
+      - POSTGRES_PASSWORD
+    volumes:
+      - './dbdata:/var/lib/postgresql/data'
+    ports:
+      - 5432:5432
+    networks:
+      - pern-app
+  api:
+    image: sidpalas/leaguedex-api:${DOCKER_TAG}
+    ports:
+      - 5000:5000
+    environment:
+      # App
+      - NODE_ENV=production
+      - PORT=5000
+      # Riot Api key
+      - API_KEY
+      # Auth Secrets
+      - ACCESS_TOKEN_SECRET
+      - REFRESH_TOKEN_SECRET
+      # Mail Service
+      - SENDGRID_API_KEY
+      - SENDGRID_EMAIL
+      # PRISMA
+      - DATABASE_URL
+    depends_on:
+      db:
+        condition: 'service_healthy'
+    # Don't mount source in production container
+    # volumes:
+    #   - ./server/src:/usr/src/app/src
+    networks:
+      - pern-app
+  client:
+    image: sidpalas/leaguedex-client:${DOCKER_TAG}
+    ports:
+      - 80:80
+    # Don't mount config production container
+    # volumes:
+    #   - ./client/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+    networks:
+      - pern-app
+networks:
+  pern-app:
+    driver: bridge
